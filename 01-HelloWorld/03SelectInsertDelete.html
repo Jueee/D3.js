@@ -1,0 +1,60 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>HelloWorld</title>
+    </head>
+    <body>
+        <h2>Hello World1 </h2>
+        <h2>Hello World2 </h2>
+        <script src="../d3.js" charset="utf-8"></script>
+        <script type="text/javascript">
+            var p = d3.select('body').select('h2');
+            p.style("color","red").style('Font-size',"22px")
+        </script>
+
+        <h3>Apple</h3>
+        <h3 id='p2'>Pear</h3>
+        <h3>bananna</h3>
+        <script src="../d3.js" charset="utf-8"></script>
+        <script type="text/javascript">
+            var p = d3.select('body').select('#p2');
+            p.style("color","red").style('Font-size',"22px")
+        </script>
+
+        <h4>Apple</h4>
+        <h4 class='last2'>Pear</h4>
+        <h4 class='last2'>bananna</h4>
+        <script src="../d3.js" charset="utf-8"></script>
+        <script type="text/javascript">
+            var p = d3.select('body').selectAll('.last2');
+            p.style("color","red").style('Font-size',"22px")
+        </script>
+
+        <h5>Apple</h5>
+        <h5>Pear</h5>
+        <h5>bananna</h5>
+        <script src="../d3.js" charset="utf-8"></script>
+        <script type="text/javascript">
+            d3.select('body').append('h5').text("append h5 element")
+        </script>
+
+        <h6>Apple</h6>
+        <h6 id='insert'>Pear</h6>
+        <h6>bananna</h6>
+        <script src="../d3.js" charset="utf-8"></script>
+        <script type="text/javascript">
+            d3.select('body').insert('h3','#insert').text("insert h6 element")
+        </script>
+
+
+        <h1>Hello World1 </h1>
+        <h1 id='delete'>Hello World2 </h1>
+        <script src="../d3.js" charset="utf-8"></script>
+        <script type="text/javascript">
+            d3.select('body').select('#delete').remove();
+        </script>
+    </body>
+    
+
+
+</html>

@@ -1,0 +1,44 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>HelloWorld</title>
+    </head>
+    <body>
+        <h2>Hello World1 </h2>
+        <h2>Hello World2 </h2>
+        <script src="../d3.js" charset="utf-8"></script>
+        <script type="text/javascript">
+            var p = d3.select('body').selectAll('h2').text('Hello Test...');
+            p.style("color","red").style('Font-size',"22px")
+        </script>
+
+        <h3>Apple</h3>
+        <h3>Pear</h3>
+        <h3>bananna</h3>
+        <script src="../d3.js" charset="utf-8"></script>
+        <script type="text/javascript">
+            var aa = ["5,7,9","asdad","oodfs"];
+            var p = d3.select('body').selectAll('h3');
+            p.data(aa);
+            p.text(function(d,i){
+                return d;
+            });
+        </script>
+
+        <h4>Apple</h4>
+        <h4>Pear</h4>
+        <h4>bananna</h4>
+        <script src="../d3.js" charset="utf-8"></script>
+        <script type="text/javascript">
+            var str = "China";
+            var p = d3.select('body').selectAll('h4');
+            p.datum(str);
+            p.text(function(d,i){
+                return "第"+i+"个元素绑定的数据是"+d;
+            });
+        </script>
+    </body>
+    
+
+
+</html>
