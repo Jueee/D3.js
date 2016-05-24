@@ -1,0 +1,122 @@
+﻿
+<!-- http://www.ourd3js.com/wordpress/?p=296 -->
+<!-- 地图的制作 -->
+<!-- 简化 GeoJSON 文件：http://mapshaper.org/ -->
+
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>地图的制作</title>
+
+    </head>
+
+    <style>
+    .link {
+      stroke: #ccc;
+      stroke-width: 1;
+    }
+    </style>
+    <body>
+        <script src="../d3.js" charset="utf-8"></script>
+        <script type="text/javascript">
+            var width = 1000;
+            var height = 1000;
+            //定义一个布局
+            var svg = d3.select("body").append("svg")
+                        .attr("width", width)
+                        .attr("height", height)
+                        .append("g")
+                        .attr("transform", "translate(0,0)");
+            //投影函数
+            //由于 GeoJSON 文件中的地图数据，都是经度和纬度的信息。它们都是三维的，而要在网页上显示的是二维的，所以要设定一个投影函数来转换经度纬度。
+            var projection = d3.geo.mercator()
+                               .center([107,31])                //设定地图的中心位置，[107,31] 指的是经度和纬度。
+                               .scale(850)                      //设定放大的比例。
+                               .translate([width/2,height/2]);  //设定平移
+            //地理路径生成器
+            var path = d3.geo.path().projection(projection);
+            //颜色函数
+            var color = d3.scale.category20();
+            //定义力学图的 Layout 
+            var force = d3.layout.force().size([width,height]);
+
+            //向服务器请求文件并绘制地图
+            d3.json("../99-MapJson/china.geojson",function(error,root){
+                if (error) {
+                    return console.error(error);
+                };
+                console.log(root);
+                //将 root 中的数据分别转换为力学图所需要的点和线
+                //存在变量 nodes 和 links 中
+                var nodes = [];
+                var links = [];
+
+                root.features.forEach(function(d,i){  //对于 root.features 中存有每一个省的数据
+                    //计算出各省的中点，保存在 centroid.x 和 centroid.y 中，再把其他信息赋值给 centroid.feature，最后插入到 nodes 中
+                    var centroid = path.centroid(d);
+                    centroid.x = centroid[0];
+                    centroid.y = centroid[1];
+                    centroid.feature = d;
+                    nodes.push(centroid);
+                });
+                //对 nodes 中的顶点进行三角剖分，即用三角形来连接各顶点，结果保存在 triangles 中
+                var triangles = d3.geom.voronoi().triangles(nodes);
+                triangles.forEach(function(d,i){
+                    //将三角形的各边存到 links 变量中
+                    links.push(edge(d[0],d[1]));
+                    links.push(edge(d[1],d[2]));
+                    links.push(edge(d[2],d[0]));
+                });
+                //对 force 的各参数进行设定
+                force.gravity(0).charge(0).nodes(nodes).links(links)
+                     .linkDistance(function(d){ return d.distance;})
+                     .start();
+                // 绘制各顶点，即中国各省
+                var node = svg.selectAll("g")
+                              .data(nodes).enter().append("g")
+                              .attr("transform",function(d){ return "translate("+ -d.x + "," + -d.y + ")";})
+                              .call(force.drag).append("path")
+                              .attr("transform",function(d){ return "translate("+ d.x + "," + d.y + ")";})
+                              .attr("stroke","#000")
+                              .attr("stroke-width",1)
+                              .attr("fill",function(d,i){
+                                   return color(i);
+                              })
+                              .attr("d",function(d){
+                                   return path(d.feature);
+                              });        //使用地理路径生成器
+                //绘制连接各省的线条
+                var link = svg.selectAll("line")
+                              .data(links).enter().append("line")
+                              .attr("class","link")
+                              .attr("x1", function(d){ return d.source.x; })
+                              .attr("y1", function(d){ return d.source.y; })
+                              .attr("x2", function(d){ return d.target.x; })
+                              .attr("y2", function(d){ return d.target.y; });
+                //tick 指的是时间间隔，也就是每一个时间间隔之后就刷新一遍画面
+                force.on("tick", function(){
+                    link.attr("x1", function(d){ return d.source.x; })
+                        .attr("y1", function(d){ return d.source.y; })
+                        .attr("x2", function(d){ return d.target.x; })
+                        .attr("y2", function(d){ return d.target.y; });
+                    node.attr("transform", function(d){
+                        return "translate(" + d.x + "," + d.y + ")";
+                    })
+                });
+            });
+            //将三角形的各边存到 links 变量中
+            function edge(a,b){
+                var dx = a[0] - b[0], dy = a[1] - b[1];
+                return {
+                    source:a,
+                    target:b,
+                    distance:Math.sqrt(dx*dx+dy*dy)
+                }
+            }
+        </script>
+
+    </body>
+    
+
+
+</html>
