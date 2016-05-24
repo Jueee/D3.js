@@ -43,12 +43,13 @@
                               [ 3211,  1067  , 3214 , 4000  , 1006 ],
                               [ 2146,  1034　 , 6745 , 4764  , 5000 ]
                             ];
-
+            //弦图的布局如下：
             var chord_layout = d3.layout.chord()
                                  .padding(0.03)
                                  .sortSubgroups(d3.descending)
                                  .matrix(population);
-
+            //应用此布局转换数据
+            //population 经过转换后，实际上分成了两部分：groups 和 chords。前者是节点，后者是连线，也就是弦。
             var groups = chord_layout.groups();
             var chords = chord_layout.chords();
 
@@ -59,13 +60,13 @@
                    .style("stroke",function(d){return color20(d.index);})
                    .attr("d",outer_arc);
             g_outer.selectAll("text").data(groups).enter().append("text")
-                   .each(function(d,i){
-                        d.angle = (d.startAngle + d.endAngle) /2;
-                        d.name = city_name[i];
+                   .each(function(d,i){   //each()：表示对任何一个绑定数据的元素，都执行后面的无名函数 
+                        d.angle = (d.startAngle + d.endAngle) /2;//计算起始角度和终止角度的平均值，赋值给 d.angle 。
+                        d.name = city_name[i];    //将 city_name[i] 城市名称赋值给 d.name 。
                    })
                    .attr("dy",".35em")
-                   .attr("transform",function(d){
-                        return "rotate(" + (d.angle*180/Math.PI) + ")" + "translate(0,"+ -1.0*(outerRadius+10)+")"+((d.angle>Math.PI*3/4 && d.angle<Math.PI*5/4)?"rotate(180)":"");
+                   .attr("transform",function(d){ //transform 的参数：用 translate 进行坐标变换时，要注意顺序： rotate -> translate（先旋转再平移）
+                        return "rotate(" + (d.angle*180/Math.PI) + ")" + "translate(0,"+ -1.0*(outerRadius+10)+")"+((d.angle>Math.PI*3/4 && d.angle<Math.PI*5/4)?"rotate(180)":"");   //当角度在 135° 到 225° 之间时，旋转 180°。不这么做的话，下方的文字是倒的。
                    })
                    .text(function(d){
                         return d.name;
