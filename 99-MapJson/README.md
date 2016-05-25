@@ -6,16 +6,16 @@
 - 日本：Japan.json
 - 俄罗斯:Russia.json
 - 新加坡：Singapore.json
-- 韩国：SouthKorea.json
+- 韩国：SouthKorea.json  
 ####美洲：
-- 美国：USA.json
+- 美国：USA.json 
 - 加拿大：Canada.json
-- 巴西：Brazil.json
+- 巴西：Brazil.json  
 ####大洋洲：
 - 澳大利亚：Australia.json
-- 新西兰：NewZealand.json
+- 新西兰：NewZealand.json  
 ####非洲：
-- 南非：SouthAfrica.json
+- 南非：SouthAfrica.json   
 ####欧洲：
 - 英国：England.json
 - 法国：France.json
@@ -65,4 +65,4 @@
 81.json  香港特别行政区    
 82.json  澳门特别行政区    
 
-##geometryCouties：各市~县的数据
+##geometryCouties：各市-县的数据
