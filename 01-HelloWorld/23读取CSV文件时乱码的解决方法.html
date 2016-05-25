@@ -1,0 +1,37 @@
+﻿
+<!-- http://www.ourd3js.com/wordpress/?p=519 -->
+<!-- 读取 CSV 文件时乱码的解决方法 -->
+
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>  读取 CSV 文件时乱码的解决方法</title>
+    </head>
+    <body>
+        <script src="../d3.js" charset="utf-8"></script>
+        <script type="text/javascript">
+        /**
+        d3.csv = d3.dsv(",", "text/csv");
+        d3.tsv = d3.dsv(" ", "text/tab-separated-values");
+
+        在 d3.dsv 的第二的参数中，其实可以添加编码的
+
+        var csv = d3.dsv(",", "text/csv;charset=gb2312");
+        var tsv = d3.dsv("  ", "text/tab-separated-values;charset=gb2312");
+        如此，你可以定义自己的 csv 和 tsv 读取函数，编码如上添加即可。
+        **/
+
+        var csv = d3.dsv(",", "text/csv;charset=gb2312");
+        csv("CSV23.csv",function(error,csvdata){
+            console.log(csvdata);
+
+            for (var i = 0;csvdata[i]; i++) {
+                var ID = csvdata[i].ID;
+                var Title = csvdata[i].Title;
+                console.log("ID:"+ID+"\tTitle:"+Title);
+            };
+        });
+        </script>
+    </body>
+
+</html>

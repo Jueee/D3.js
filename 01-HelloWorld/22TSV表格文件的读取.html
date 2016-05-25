@@ -1,0 +1,45 @@
+﻿
+<!-- http://www.ourd3js.com/wordpress/?p=501 -->
+<!-- TSV表格文件的读取 -->
+
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title> TSV表格文件的读取 </title>
+    </head>
+    <body>
+        <script src="../d3.js" charset="utf-8"></script>
+        <script type="text/javascript">
+
+            //D3 中读取 TSV 文件
+            d3.tsv("TSV22.tsv",function(error,tsvdata){
+                console.log(tsvdata);
+
+                var str = d3.tsv.format(tsvdata);
+                console.log(str.length);
+                console.log(str);
+            });
+
+            //D3 中读取 CSV 和 TSV 的本质
+
+            /**
+            d3.csv = d3.dsv(",", "text/csv");
+            d3.tsv = d3.dsv(" ", "text/tab-separated-values");
+            **/
+            /**
+            dsv 其实可以读取以任意字符或字符串作为分隔符的表格文件。
+            接下来我们来试试用 dsv 函数读取以分号作为分隔符的表格文件。
+            **/
+            //先用 d3.dsv(“;”, “text/plain”); 定义分隔符为分号
+            var dsv = d3.dsv(";", "text/csv");
+            //注意不再需要用 d3.dsv ，因为变量 dsv 已经是一个函数了。
+            dsv("DSV22.dsv",function(error,dsvdata){
+                if (error) {
+                    console.log(error);
+                };
+                console.log(dsvdata);
+            });
+        </script>
+    </body>
+
+</html>
