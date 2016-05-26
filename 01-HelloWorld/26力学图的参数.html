@@ -1,0 +1,58 @@
+﻿
+<!-- http://www.ourd3js.com/wordpress/?p=613-->
+<!--力学图的参数 -->
+
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>力学图的参数</title>
+</head>
+<body>
+<p>D3 中提供了 17 个函数用于设定其参数和事件，在所有布局中是最多的，下面将对其进行说明。</p>
+<h1 style="font-size: 30px;">size()</h1>
+<p>用于设定力学图的作用范围，使用方法为 force.size( [ x , y ] )，这个函数用于指定两件事：</p>
+<ul>
+<li>重力的重心位置为 ( x/2 , y/2 )</li>
+<li>所有节点的<span style="color: #ff0000;">初始位置</span>限定为 [ 0 , x ] 和 [ 0 , y ] 之间（但并非之后也是如此）</li>
+</ul>
+<p>如果不指定，默认为 [ 1 , 1 ] 。</p>
+<h1 style="font-size: 30px;">linkDistance()</h1>
+<p>指定结点连接线的距离，默认为20。如果距离是一个常数，那么各连接线的长度总是固定的；如果是一个函数，那么这个函数是作用于各连接线（ source , target ）的。</p>
+<h1 style="font-size: 30px;">linkStrength()</h1>
+<p>指定连接线的坚硬度，值的范围为[ 0 , 1 ]，值越大越坚硬。其直观感受是：</p>
+<ul>
+<li>值为1，则拖动一个顶点A，与之相连的顶点会与A保持linkDistance设定的距离运动</li>
+<li>值为0，则拖动一个顶点A，与之相连的顶点不会运动，连接线会被拉长</li>
+</ul>
+<h1 style="font-size: 30px;">friction()</h1>
+<p>定义摩擦系数的函数，值的范围为[ 0 , 1 ]，默认为0.9。但是这个值其实并非物理意义上的摩擦，其实际意义更接近速度随时间产生的损耗，这个损耗是针对每一个顶点的。</p>
+<ul>
+<li>值为1，则没有速度的损耗。</li>
+<li>值为0，则速度的损耗最大。</li>
+</ul>
+<h1 style="font-size: 30px;">charge()</h1>
+<p>设定顶点的电荷数。该参数决定是排斥还是吸引，默认值为-30。</p>
+<ul>
+<li>值为+，则相互吸引，绝对值越大吸引力越大。</li>
+<li>值为-，则相互排斥，绝对值越大排斥力越大。</li>
+</ul>
+<h1 style="font-size: 30px;">chargeDistance()</h1>
+<p>设定引力的作用距离，超过这个距离，则没有引力的作用。默认值为无穷大。</p>
+<h1 style="font-size: 30px;">gravity()</h1>
+<p>以 size 函数设定的中心产生重力，各顶点都会向中心运动，默认值为0.1。也可以设定为0，则没有重力的作用。</p>
+<h1 style="font-size: 30px;">theta()</h1>
+<p>顶点数如果过多，计算的时间就会加大（O(n log n)）。theta 就是为了限制这个计算而存在的，默认值为0.8。这个值越小，就能把计算限制得越紧。</p>
+<h1 style="font-size: 30px;">alpha()</h1>
+<p>设定动画的冷却系数，运动过程中该系数会不断减小，直到等于0为止，此时动画也停止了。其实：</p>
+<ul>
+<li>force.start() 是将 alpha 设定为 0.1（通过调用resume） 后开始计算的</li>
+<li>force.resume() 等价于 alpha(0.1)</li>
+<li>force.stop() 等价于 alpha(0)</li>
+</ul>
+<p>谢谢阅读。</p>
+    <script src="../d3.js" charset="utf-8"></script>
+    <script type="text/javascript">
+
+    </script>
+</body>
+</html>

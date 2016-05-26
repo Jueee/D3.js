@@ -3,28 +3,9 @@
     <meta charset="utf-8">
 </head>
 <script>
-function searchFiles(){
-    var fso = new ActiveXObject("Scripting.FileSystemObject");
-    var f = fso.GetFolder(document.all.fixfolder.value);
-    var fc = new Enumerator(f.files);
-    var s = "";
-    for (; !fc.atEnd(); fc.moveNext())
-        {
-            s += fc.item();
-            s += "<br/>";
-        }
-        fk = new Enumerator(f.SubFolders);
-        for (; !fk.atEnd(); fk.moveNext())
-        {
-        s += fk.item();
-        s += "<br/>";
-        }
-        textarea.innerHTML = s
-}
+
 </script>
 <body>
-    <input type="button" value ="搜索" onclick="searchFiles()">
-    <td id = "textarea">
     <h1>01-HelloWorld</h1>	
     <a href="01-HelloWorld/01HelloWorld.html">01HelloWorld.html</a><br/>
 	<a href="01-HelloWorld/02选择元素和绑定数据.html">02选择元素和绑定数据.html</a><br/>
@@ -49,5 +30,8 @@ function searchFiles(){
 	<a href="01-HelloWorld/21CSV表格文件的读取.html">21CSV表格文件的读取.html</a><br/>
 	<a href="01-HelloWorld/22TSV表格文件的读取.html">22TSV表格文件的读取.html</a><br/>
 	<a href="01-HelloWorld/23读取CSV文件时乱码的解决方法.html">23读取CSV文件时乱码的解决方法.html</a><br/>
+	<a href="01-HelloWorld/24力学图+人物关系图.html">24力学图+人物关系图.html</a><br/>
+	<a href="01-HelloWorld/25力学图的事件+顶点的固定.html">25力学图的事件+顶点的固定.html</a><br/>
+	<a href="01-HelloWorld/26力学图的参数.html">26力学图的参数.html</a><br/>
 </body>
 </html>

@@ -1,0 +1,160 @@
+﻿
+<!-- http://www.ourd3js.com/wordpress/?p=606 -->
+<!-- 力学图的事件 + 顶点的固定 -->
+
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>  力学图的事件 + 顶点的固定</title>
+</head>
+<style type="text/css">
+.nodetext {
+    font-size: 12px ;
+    font-family: SimSun;
+    fill:#000000;
+}
+.linetext {
+    font-size: 12px ;
+    font-family: SimSun;
+    fill:#0000FF;
+    fill-opacity:0.0;
+}
+</style>
+<body>
+    <script src="../d3.js" charset="utf-8"></script>
+    <script type="text/javascript">
+    /**
+    力学图布局 force 本身的事件，D3 提供了3个，分别为 start ，end，tick.
+    //力学图运动开始时
+    force.on("start", function(){
+        console.log("开始");
+    });
+    
+    //力学图运动结束时
+    force.on("end", function(){
+        console.log("结束");
+    });
+    
+    //力学图每一帧
+    force.on("tick", function(){
+        console.log("进行中");
+    });
+    **/
+    var width = 1000;
+    var height = 1000;
+    //定义一个布局
+    var svg = d3.select("body").append("svg")
+                .attr("width", width)
+                .attr("height", height);
+
+    var img_w = 77;
+    var img_h = 90;
+    d3.json("JSON24.json",function(error,root){
+        if (error) {
+            return console.log(error);
+        };
+        console.log(root);
+        //力学图的 Layout（布局）
+        var force = d3.layout.force()
+                      .nodes(root.nodes)
+                      .links(root.edges)
+                      .size([width,height])
+                      .linkDistance(200)        //结点间的距离
+                      .charge(-1500)            //定义结点间是吸引（值为正）还是互斥（值为负），值越大力越强
+                      .start();
+        var drag = force.drag()
+                        .on("dragstart",function(d,i){
+                            //使用布局转换数据之后，顶点有一个属性 fixed 。
+                            //当这个值为 true 时，顶点就是固定不动的；为 false 时，它就是运动的。
+                            //默认是 false 的。
+                            d.fixed = true;//拖拽开始后设定被拖拽对象为固定
+                            console.log("拖拽状态：开始");
+                        })
+                        .on("dragend",function(d,i){
+                            console.log("拖拽状态：结束");
+                        })
+                        .on("drag",function(d,i){
+                            console.log("拖拽状态：进行中");
+                        });
+        //绘制结点之间的连接线
+        var edges_line = svg.selectAll("line")
+                            .data(root.edges)
+                            .enter().append("line")
+                            .style("stroke","#ccc")
+                            .style("stroke-width",1);
+        var edges_text = svg.selectAll(".linetext")
+                            .data(root.edges)
+                            .enter().append("text")
+                            .attr("class","linetext")
+                            .text(function(d){
+                                return d.relation;
+                            });
+        //绘制结点的图片
+        var nodes_img = svg.selectAll("image")
+                           .data(root.nodes)
+                           .enter().append("image")
+                           .attr("width",img_w)
+                           .attr("height",img_h)
+                           .attr("xlink:href",function(d){
+                                return "src/"+d.image;
+                           })
+                           .on("mouseover",function(d,i){
+                                edges_text.style("fill-opacity",function(edge){
+                                    if (edge.source===d||edge.target===d) {
+                                        return 1.0;
+                                    };
+                                });
+                           })
+                           .on("mouseout",function(d,i){
+                                edges_text.style("fill-opacity",function(edge){
+                                    if (edge.source===d||edge.target===d) {
+                                        return 0.0;
+                                    };
+                                });
+                           })
+                           .on("dblclick",function(d,i){    //当鼠标双击顶点时，对顶点解锁
+                                d.fixed = false;
+                                console.log("鼠标双击，解锁 "+d.name);
+                           })
+                           .call(drag);
+        //绘制图片下方的文字
+        var text_dx = -20;
+        var text_dy = 20;
+        var nodes_text = svg.selectAll(".nodetext")
+                            .data(root.nodes)
+                            .enter().append("text")
+                            .attr("class","nodetext")
+                            .attr("dx",text_dx)
+                            .attr("dy",text_dy)
+                            .text(function(d){
+                                return d.name;
+                            });
+        //设定力学图更新时调用的函数，使用 force.on(“tick”,function(){ })，表示每一步更新都调用 function 函数
+        force.on("tick",function(){
+            //限制结点的边界
+            root.nodes.forEach(function(d,i){
+                d.x = d.x - img_w/2 <0 ? img_w/2 : d.x;
+                d.x = d.x + img_w/2 >width ? width-img_w/2 : d.x;
+                d.y = d.y - img_h/2 <0 ? img_h/2 : d.y;
+                d.y = d.y + img_h/2 >height ? height-img_h/2 : d.y;
+            });
+            //更新连接线的位置
+            edges_line.attr("x1",function(d){return d.source.x;});
+            edges_line.attr("y1",function(d){return d.source.y;});
+            edges_line.attr("x2",function(d){return d.target.x;});
+            edges_line.attr("y2",function(d){return d.target.y;});
+            //更新连接线上文字的位置
+            edges_text.attr("x",function(d){return (d.source.x+d.target.x)/2;});
+            edges_text.attr("y",function(d){return (d.source.y+d.target.y)/2;});
+            //更新结点图片
+            nodes_img.attr("x",function(d){return d.x-img_w/2;});
+            nodes_img.attr("y",function(d){return d.y-img_h/2;});
+            //更新结点文字
+            nodes_text.attr("x",function(d){return d.x;});
+            nodes_text.attr("y",function(d){return d.y+img_w/2;});
+        });
+    });
+    </script>
+</body>
+
+</html>
