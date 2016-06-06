@@ -1,16 +1,85 @@
 ﻿
-<!-- -->
-<!-- -->
+<!--http://www.ourd3js.com/wordpress/?p=653 -->
+<!--圆形分区图的制作 -->
 
 <html>
 <head>
     <meta charset="utf-8">
-    <title></title>
+    <title>圆形分区图的制作</title>
 </head>
 <body>
     <script src="../d3.js" charset="utf-8"></script>
     <script type="text/javascript">
+        var width = 600;
+        var height = 600;
+        var radius = Math.min(width, height) / 2;
+        //定义一个布局
+        var svg = d3.select("body").append("svg")
+                    .attr("width", width)
+                    .attr("height", height)
+                    .append("g")
+                    .attr("transform","translate("+radius+","+radius+")");
+        var color = d3.scale.category20();
+        //分区图的布局
+        var partition = d3.layout.partition()
+                          .sort(null)           //设定内部的顶点的排序函数，null 表示不排序
+                          .size([2*Math.PI,radius*radius]) //设定转换后图形的范围，第一个值为 2 * PI ，第二个值为圆半径的平方
+                          .value(function(d){ return 1; }); //设定表示分区大小的值
+                                                            //如果数据文件中用 size 值表示结点大小，那么这里可写成 return d.size
+        //绘制
+        var arc = d3.svg.arc()
+                    .startAngle(function(d){return d.x;})
+                    .endAngle(function(d){return d.x+d.dx;})
+                    .innerRadius(function(d){return Math.sqrt(d.y);})
+                    .outerRadius(function(d){return Math.sqrt(d.y+d.dy);});
+        //读取并转换数据
+        d3.json("JSON16.json",function(error,root){
+            if (error) {
+                console.log(error);
+            };
+            console.log(root);
 
+            var nodes = partition.nodes(root);
+            var links = partition.links(nodes);
+            console.log(nodes);
+
+            var arcs = svg.selectAll("g").data(nodes)
+                          .enter().append("g");
+            arcs.append("path")
+                .attr("display",function(d){return d.depth?null:"none";})
+                .attr("d",arc)
+                .style("stroke","#fff")
+                .style("fill",function(d){return color((d.children?d:d.parent).name);})
+                .on("mouseover",function(d){
+                    d3.select(this).style("fill","yellow");
+                })
+                .on("mouseout",function(d){
+                    d3.select(this).transition().duration(200)
+                      .style("fill",function(d){
+                            return color((d.children?d:d.parent).name);
+                      })
+                });
+            arcs.append("text")
+                .style("font-size","12px")
+                .style("font-family","simsun")
+                .attr("text-anchor","middle")
+                .attr("transform",function(d,i){
+                    //第一个元素（最中间的），只平移不旋转
+                    if(i==0){
+                        return "translate("+arc.centroid(d)+")";
+                    }
+                    //其他的元素，既平移也旋转
+                    var r = 0;
+                    if ((d.x+d.dx/2)/Math.PI*180<180) {  // 0 - 180 度以内的
+                        r = 180* ((d.x+d.dx/2-Math.PI/2)/Math.PI);
+                    } else {        // 180 - 360 度以内的
+                        r = 180* ((d.x+d.dx/2+Math.PI/2)/Math.PI);
+                    };
+                    //既平移也旋转
+                    return "translate("+arc.centroid(d)+")"+"rotate("+r+")";
+                })
+                .text(function(d){ return d.name;});
+        });
     </script>
 </body>
 </html>
