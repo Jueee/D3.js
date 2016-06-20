@@ -10,12 +10,65 @@
 <body>
     <script src="../d3.js" charset="utf-8"></script>
     <script type="text/javascript">
-        var width = 1000;
-        var height = 1000;
+        var width = 500;
+        var height = 500;
         //定义一个布局
-        var svg = d3.select("body").append("svg")
-                    .attr("width", width)
-                    .attr("height", height);
+        //在 body 里添加一个 SVG 画布   
+        var svg = d3.select('body').append('svg').attr('width',width).attr('height',height);
+        
+        var dataset = [30,10,43,55,13];
+        //定义一个布局,返回值赋给变量 pie，此时 pie 可以当做函数使用。
+        var pie = d3.layout.pie();
+        //将数组 dataset 作为 pie() 的参数，piedata 就是转换后的数据。
+        var piedate = pie(dataset);
+
+        var outerRadius = 150;                  //外半径
+        var innerRadius = 100;                    //内半径，为0则中间没有空白
+
+        var arc = d3.svg.arc()                  //弧生成器
+                    .innerRadius(innerRadius)   //设置内半径
+                    .outerRadius(outerRadius);  //设置外半径
+        //在 <svg> 里添加足够数量（5个）个分组元素（g），每一个分组用于存放一段弧的相关元素。
+        //饼状图的绘制
+        var gAll = svg.append("g")
+                      .attr("transform","translate("+outerRadius+","+outerRadius+")");
+        //color 是一个颜色比例尺，它能根据传入的索引号获取相应的颜色值
+        var color = d3.scale.category10();
+        var drag = d3.behavior.drag()
+                     .origin(function(d){return d;})
+                     .on("drag",dragmove);
+
+        var arcs = gAll.selectAll(".arcs_g")
+                       .data(pie(dataset))
+                       .enter().append("g")
+                       .each(function(d){   //指定当前区域的平移量
+                            d.dx = 0;
+                            d.dy = 0;
+                       })
+                       .call(drag);         //调用drag函数
+        
+        arcs.append("path")
+            .attr("fill",function(d,i){
+                return color(i);
+            })
+            .attr("d",function(d){
+                return arc(d);
+            });
+        //在每一个弧线中心添加文本
+        arcs.append("text")
+            .attr("transform",function(d){
+                return "translate("+arc.centroid(d)+")";    //arc.centroid(d) 能算出弧线的中心
+            })
+            .attr("text-anchor","middle")
+            .text(function(d){
+                return d.data;  //被绑定的数据是对象，里面有 d.startAngle、d.endAngle、d.data 等，其中 d.data 才是转换前的整数的值。
+            });
+        function dragmove(d){
+            d.dx += d3.event.dx;
+            d.dy += d3.event.dy;
+            d3.select(this)
+              .attr("transform","translate("+d.dx+","+d.dy+")");
+        }
     </script>
 </body>
 </html>

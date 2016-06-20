@@ -1,21 +1,39 @@
 ﻿
-<!-- -->
-<!-- -->
+<!--http://www.ourd3js.com/wordpress/?p=714 -->
+<!--拖拽的应用（Drag） -->
 
 <html>
 <head>
     <meta charset="utf-8">
-    <title></title>
+    <title>拖拽的应用（Drag）</title>
 </head>
 <body>
     <script src="../d3.js" charset="utf-8"></script>
     <script type="text/javascript">
-        var width = 1000;
-        var height = 1000;
+        var width = 500;
+        var height = 500;
         //定义一个布局
         var svg = d3.select("body").append("svg")
                     .attr("width", width)
                     .attr("height", height);
+
+        //D3中可用 d3.behavior.drag() 来定义 drag 行为
+        var drag = d3.behavior.drag()
+                     .on("drag",dragmove);  //当 drag 事件发生后即调用 dragmove 函数
+        function dragmove(d){
+            d3.select(this)
+              .attr("cx",d.cx=d3.event.x)
+              .attr("cy",d.cy=d3.event.y);
+        }
+        var circles = [ { cx: 150, cy:200, r:30 },
+                        { cx: 250, cy:200, r:30 }];
+
+        svg.selectAll("circle").data(circles).enter().append("circle")
+           .attr("cx",function(d){return d.cx; })
+           .attr("cy",function(d){return d.cy; })
+           .attr("r",function(d){return d.r; })
+           .attr("fill","black")
+           .call(drag);
     </script>
 </body>
 </html>
